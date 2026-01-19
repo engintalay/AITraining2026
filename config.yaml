@@ -17,7 +17,7 @@ peft:
     - "o_proj"
 
 training:
-  batch_size: 4
+  batch_size: 3
   gradient_accumulation_steps: 4
   num_train_epochs: 100
   learning_rate: 2.0e-4
@@ -28,5 +28,6 @@ training:
   dataloader_num_workers: 0  # CPU yükünü azalt
 
 data:
-  dataset_path: "dataset.json"
+  # dataset_path: "dataset.json"
+  dataset_path: "Zogoria_converted.json"
   max_seq_length: 512
