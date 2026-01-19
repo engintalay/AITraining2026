@@ -1,0 +1,27 @@
+[
+  {
+    "instruction": "What is the capital of France?",
+    "input": "",
+    "output": "The capital of France is Paris."
+  },
+  {
+    "instruction": "Explain quantum entanglement in simple terms.",
+    "input": "",
+    "output": "Quantum entanglement is a phenomenon where two particles become linked, so that the state of one instantly influences the other, no matter how far apart they are."
+  },
+  {
+    "instruction": "Write a Python function to add two numbers.",
+    "input": "",
+    "output": "def add(a, b):\n    return a + b"
+  },
+  {
+    "instruction": "Classify the sentiment of this text.",
+    "input": "I absolutely love this movie! It's fantastic.",
+    "output": "Positive"
+  },
+  {
+    "instruction": "Classify the sentiment of this text.",
+    "input": "The food was cold and the service was terrible.",
+    "output": "Negative"
+  }
+]

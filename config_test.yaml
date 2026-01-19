@@ -1,0 +1,27 @@
+model:
+  name_or_path: "gpt2"
+  quantization_bit: null
+  use_gradient_checkpointing: false
+  trust_remote_code: false
+
+peft:
+  r: 4
+  lora_alpha: 8
+  lora_dropout: 0.05
+  target_modules:
+    - "c_attn"
+
+training:
+  batch_size: 1
+  gradient_accumulation_steps: 1
+  num_train_epochs: 1
+  learning_rate: 2.0e-4
+  logging_steps: 1
+  save_steps: 5
+  output_dir: "experiments/test_run"
+  resume_from_checkpoint: false
+  max_steps: 3
+
+data:
+  dataset_path: "dataset.json"
+  max_seq_length: 128

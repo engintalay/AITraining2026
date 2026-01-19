@@ -1,0 +1,29 @@
+model:
+  name_or_path: "mistralai/Mistral-7B-v0.1"
+  quantization_bit: 4
+  use_gradient_checkpointing: true
+  trust_remote_code: false
+
+peft:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules:
+    - "q_proj"
+    - "k_proj"
+    - "v_proj"
+    - "o_proj"
+
+training:
+  batch_size: 1
+  gradient_accumulation_steps: 4
+  num_train_epochs: 1
+  learning_rate: 2.0e-4
+  logging_steps: 5
+  save_steps: 25
+  output_dir: "experiments/mistral_finetune_v1"
+  resume_from_checkpoint: true
+
+data:
+  dataset_path: "dataset.json"
+  max_seq_length: 512
