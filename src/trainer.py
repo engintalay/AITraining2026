@@ -80,10 +80,14 @@ class LLMTrainer:
         # Handle Resume
         resume_from_checkpoint = None
         if self.config.training.resume_from_checkpoint:
-            # If output_dir exists and has checkpoints, it will try to resume.
-            # Explicitly passing True to train method tells it to look in output_dir.
-            resume_from_checkpoint = self.config.training.resume_from_checkpoint
-            logger.info(f"Resume capability enabled: {resume_from_checkpoint}")
+            from transformers.trainer_utils import get_last_checkpoint
+            last_checkpoint = get_last_checkpoint(self.config.training.output_dir)
+            if last_checkpoint is None:
+                logger.warning(f"No checkpoint found in {self.config.training.output_dir}. Starting from scratch.")
+                resume_from_checkpoint = False
+            else:
+                logger.info(f"Resuming from checkpoint: {last_checkpoint}")
+                resume_from_checkpoint = True
 
         train_result = trainer.train(resume_from_checkpoint=resume_from_checkpoint)
         
