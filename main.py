@@ -4,6 +4,17 @@ from src.utils import setup_logger, print_system_info, set_seed
 from src.model_loader import load_model, load_tokenizer
 from src.data_handler import load_dataset
 from src.trainer import LLMTrainer
+import torch
+import os
+
+# GPU kullanımını zorla
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:512"
+
+# CPU thread sayısını sınırla
+torch.set_num_threads(4)
+os.environ["OMP_NUM_THREADS"] = "4"
+os.environ["MKL_NUM_THREADS"] = "4"
 
 logger = setup_logger("Main")
 

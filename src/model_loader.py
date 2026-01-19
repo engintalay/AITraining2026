@@ -18,7 +18,10 @@ def load_tokenizer(model_config: ModelConfig):
     return tokenizer
 
 def load_model(model_config: ModelConfig, peft_config: PeftConfig = None, inference_mode: bool = False):
-    logger.info(f"Loading model {model_config.name_or_path}. Inference Mode: {inference_mode}")
+    if not torch.cuda.is_available():
+        raise RuntimeError("CUDA not available! GPU required for this model.")
+    
+    logger.info(f"Loading model {model_config.name_or_path} on GPU. Inference Mode: {inference_mode}")
     
     bnb_config = None
     if model_config.quantization_bit in [4, 8]:
@@ -28,15 +31,17 @@ def load_model(model_config: ModelConfig, peft_config: PeftConfig = None, infere
             load_in_8bit=(model_config.quantization_bit == 8),
             bnb_4bit_compute_dtype=torch.float16,
             bnb_4bit_use_double_quant=True,
-            bnb_4bit_quant_type="nf4" if model_config.quantization_bit == 4 else "fp4" # Default for 4bit
+            bnb_4bit_quant_type="nf4" if model_config.quantization_bit == 4 else "fp4"
         )
 
     model = AutoModelForCausalLM.from_pretrained(
         model_config.name_or_path,
         quantization_config=bnb_config,
-        device_map="auto" if torch.cuda.is_available() else None,
+        device_map="auto",  # GPU'ya otomatik yerleştir
         trust_remote_code=model_config.trust_remote_code,
-        torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
+        torch_dtype=torch.float16,
+        low_cpu_mem_usage=True,
+        use_cache=False if not inference_mode else True
     )
 
     if not inference_mode:

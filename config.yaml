@@ -3,6 +3,8 @@ model:
   quantization_bit: 4
   use_gradient_checkpointing: true
   trust_remote_code: false
+  low_cpu_mem_usage: true  # CPU bellek kullanımını azalt
+  max_cpu_threads: 4       # CPU thread sayısını sınırla
 
 peft:
   r: 16
@@ -15,14 +17,15 @@ peft:
     - "o_proj"
 
 training:
-  batch_size: 1
+  batch_size: 4
   gradient_accumulation_steps: 4
-  num_train_epochs: 1
+  num_train_epochs: 100
   learning_rate: 2.0e-4
   logging_steps: 5
-  save_steps: 25
+  save_steps: 5
   output_dir: "experiments/mistral_finetune_v1"
   resume_from_checkpoint: true
+  dataloader_num_workers: 0  # CPU yükünü azalt
 
 data:
   dataset_path: "dataset.json"

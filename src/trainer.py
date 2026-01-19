@@ -49,6 +49,13 @@ class LLMTrainer:
         self.dataset = dataset
     
     def train(self):
+        # GPU kontrolü
+        if not torch.cuda.is_available():
+            raise RuntimeError("CUDA not available! GPU training required.")
+        
+        device = torch.cuda.current_device()
+        logger.info(f"Using GPU: {torch.cuda.get_device_name(device)}")
+        
         logger.info("Initializing Trainer...")
         
         training_args = TrainingArguments(
@@ -61,10 +68,12 @@ class LLMTrainer:
             num_train_epochs=self.config.training.num_train_epochs,
             optim=self.config.training.optim,
             warmup_steps=self.config.training.warmup_steps,
-            fp16=True if torch.cuda.is_available() else False,
-            report_to="none", # We use our own logger
+            fp16=True,  # A5000 için FP16 kullan
+            dataloader_pin_memory=True,  # GPU transfer hızını artır
+            dataloader_num_workers=0,  # CPU yükünü azalt
+            remove_unused_columns=False,
+            report_to="none",
             ddp_find_unused_parameters=False,
-            # Resume logic handled here or via trainer.train(resume_from_checkpoint=...)
         )
 
         trainer = Trainer(
