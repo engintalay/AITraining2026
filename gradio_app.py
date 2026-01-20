@@ -7,7 +7,7 @@ def compare_models(question):
         response = requests.post(
             "http://localhost:8000/compare",
             json={"question": question},
-            timeout=30
+            timeout=120
         )
         if response.status_code == 200:
             data = response.json()
