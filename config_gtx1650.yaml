@@ -1,0 +1,32 @@
+model:
+  name_or_path: "microsoft/DialoGPT-small"  # Çok daha küçük model (117M parametre)
+  quantization_bit: 4                       # 4-bit quantization zorunlu
+  use_gradient_checkpointing: true          # VRAM tasarrufu
+  torch_dtype: "float16"                    # Half precision
+
+peft:
+  r: 8                                      # Düşük LoRA rank
+  lora_alpha: 16                           # Alpha değeri düşürüldü
+  target_modules: ["c_attn"]               # Sadece attention modülü
+  lora_dropout: 0.1
+
+training:
+  batch_size: 1                            # Minimum batch size
+  gradient_accumulation_steps: 8           # Büyük accumulation
+  num_train_epochs: 1
+  learning_rate: 1.0e-4                    # Düşük learning rate
+  output_dir: "experiments/gtx1650_finetune"
+  resume_from_checkpoint: true
+  dataloader_num_workers: 0                # CPU kullanımını azalt
+  save_steps: 100
+  logging_steps: 10
+  max_grad_norm: 0.3                       # Gradient clipping
+
+data:
+  dataset_path: "dataset.json"
+  max_seq_length: 256                      # Çok düşük sequence length
+  
+system:
+  low_cpu_mem_usage: true                  # CPU memory optimizasyonu
+  device_map: "auto"
+  max_memory: {0: "3.5GB"}                 # GPU memory limiti
