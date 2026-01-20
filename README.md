@@ -76,41 +76,26 @@ python main.py --config config.yaml
 *   **İpucu:** Eğer `config.yaml` dosyasında `resume_from_checkpoint: true` ise ve `output_dir` içinde daha önce alınmış bir kayıt varsa, eğitim kaldığı yerden devam eder.
 *   Eğitim sırasında loglar ekrana ve `training.log` dosyasına basılır.
 
-## 🧪 Test ve Karşılaştırma API'si
+## 🧪 Test ve Karşılaştırma
 
-Eğittiğiniz modeli base model ile karşılaştırmak için API servisini başlatın:
+### 1. API Sunucusu (FastAPI)
+```bash
+uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
+```
 
-1.  **API Sunucusunu Başlatın:**
-    ```bash
-    uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
-    ```
-    *Not: API varsayılan olarak `config.yaml` dosyasını okur. Farklı bir config için `CONFIG_PATH` environment değişkenini kullanabilirsiniz.*
+### 2. Gradio Test Arayüzü
+Kolay test için Gradio web arayüzü:
+```bash
+python gradio_app.py
+```
+Tarayıcıda `http://localhost:7002` adresini açın.
 
-2.  **Karşılaştırma İsteği Gönderin:**
-    Yeni bir terminal açıp `curl` veya Postman ile test edebilirsiniz:
-
-    ```bash
-    curl -X POST "http://localhost:8000/compare" \
-         -H "Content-Type: application/json" \
-         -d '{"question": "Python nedir?"}'
-    ```
-
-    **Örnek Yanıt:**
-    ```json
-    {
-      "question": "Python nedir?",
-      "base_model": {
-        "answer": "...",
-        "tokens_used": 150,
-        "time_ms": 1200
-      },
-      "finetuned_model": {
-        "answer": "...",
-        "tokens_used": 145,
-        "time_ms": 900
-      }
-    }
-    ```
+### 3. Manuel API Testi
+```bash
+curl -X POST "http://localhost:8000/compare" \
+     -H "Content-Type: application/json" \
+     -d '{"question": "Python nedir?"}'
+```
 
 ## 📂 Klasör Yapısı
 
