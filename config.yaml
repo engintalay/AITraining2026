@@ -29,5 +29,5 @@ training:
 
 data:
   # dataset_path: "dataset.json"
-  dataset_path: "Zogoria_converted.json"
+  dataset_path: "Zogoria_QA_clean.json"
   max_seq_length: 512

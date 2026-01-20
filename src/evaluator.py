@@ -55,14 +55,22 @@ class Evaluator:
                 outputs = self.model.generate(
                     **inputs, 
                     max_new_tokens=256, 
-                    pad_token_id=self.tokenizer.eos_token_id
+                    pad_token_id=self.tokenizer.eos_token_id,
+                    do_sample=True,
+                    temperature=0.7,
+                    top_p=0.9,
+                    repetition_penalty=1.1
                 )
         else:
             # Either it's not a PeftModel, or we WANT to use the adapter
             outputs = self.model.generate(
                 **inputs, 
                 max_new_tokens=256, 
-                pad_token_id=self.tokenizer.eos_token_id
+                pad_token_id=self.tokenizer.eos_token_id,
+                do_sample=True,
+                temperature=0.7,
+                top_p=0.9,
+                repetition_penalty=1.1
             )
             
         end_time = time.time()
