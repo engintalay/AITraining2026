@@ -19,8 +19,8 @@ peft:
 training:
   batch_size: 3
   gradient_accumulation_steps: 4
-  num_train_epochs: 100
-  learning_rate: 2.0e-4
+  num_train_epochs: 10
+  learning_rate: 3.0e-4
   logging_steps: 5
   save_steps: 5
   output_dir: "experiments/mistral_finetune_v1"
