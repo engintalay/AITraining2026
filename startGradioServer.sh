@@ -1,2 +1,4 @@
+#!/bin/bash
 source venv/bin/activate
-python gradio_app.py
+export CONFIG_PATH="config_gtx1650.yaml"
+python simple_test.py
