@@ -1,5 +1,6 @@
 model:
-  name_or_path: "microsoft/DialoGPT-small"  # Çok daha küçük model (117M parametre)
+  #name_or_path: "ytu-ce-cosmos/turkish-gpt2-large"  # Base Phi-2 model
+  name_or_path: "./models/ytu-ce-cosmos/turkish-gpt2-large"
   quantization_bit: 4                       # 4-bit quantization zorunlu
   use_gradient_checkpointing: true          # VRAM tasarrufu
   torch_dtype: "float16"                    # Half precision
