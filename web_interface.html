@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Model Karşılaştırma</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; margin-bottom: 30px; }
+        .input-section { margin-bottom: 30px; }
+        textarea { width: 100%; padding: 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; resize: vertical; min-height: 100px; }
+        button { background: #007bff; color: white; padding: 12px 30px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .results { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+        .result-box { border: 2px solid #ddd; border-radius: 8px; padding: 20px; }
+        .result-box h3 { margin-bottom: 15px; color: #333; }
+        .base-model { border-color: #6c757d; }
+        .finetuned-model { border-color: #28a745; }
+        .response { background: #f8f9fa; padding: 15px; border-radius: 5px; white-space: pre-wrap; min-height: 200px; }
+        .stats { margin-top: 10px; font-size: 14px; color: #666; }
+        .loading { text-align: center; color: #007bff; margin: 20px 0; }
+        .error { color: #dc3545; background: #f8d7da; padding: 10px; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🤖 LLM Model Karşılaştırma</h1>
+        
+        <div class="input-section">
+            <textarea id="question" placeholder="Sorunuzu buraya yazın..."></textarea>
+            <button onclick="compareModels()" id="compareBtn">Modelleri Karşılaştır</button>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            ⏳ Modeller cevap üretiyor...
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div class="results" id="results" style="display: none;">
+            <div class="result-box base-model">
+                <h3>🔵 Base Model</h3>
+                <div id="baseResponse" class="response"></div>
+                <div id="baseStats" class="stats"></div>
+            </div>
+            
+            <div class="result-box finetuned-model">
+                <h3>🎯 Fine-tuned Model</h3>
+                <div id="finetunedResponse" class="response"></div>
+                <div id="finetunedStats" class="stats"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function compareModels() {
+            const question = document.getElementById('question').value.trim();
+            if (!question) {
+                showError('Lütfen bir soru girin.');
+                return;
+            }
+
+            const btn = document.getElementById('compareBtn');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            const error = document.getElementById('error');
+
+            // UI durumunu güncelle
+            btn.disabled = true;
+            loading.style.display = 'block';
+            results.style.display = 'none';
+            error.style.display = 'none';
+
+            try {
+                const response = await fetch('http://localhost:8000/compare', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                
+                // Sonuçları göster
+                document.getElementById('baseResponse').textContent = data.base_model.answer;
+                document.getElementById('baseStats').textContent = 
+                    `Süre: ${data.base_model.response_time_ms}ms | Token: ${data.base_model.tokens_used}`;
+                
+                document.getElementById('finetunedResponse').textContent = data.finetuned_model.answer;
+                document.getElementById('finetunedStats').textContent = 
+                    `Süre: ${data.finetuned_model.response_time_ms}ms | Token: ${data.finetuned_model.tokens_used}`;
+
+                results.style.display = 'grid';
+
+            } catch (err) {
+                showError(`Hata: ${err.message}`);
+            } finally {
+                btn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        function showError(message) {
+            const error = document.getElementById('error');
+            error.textContent = message;
+            error.style.display = 'block';
+        }
+
+        // Enter tuşu ile gönder
+        document.getElementById('question').addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                compareModels();
+            }
+        });
+    </script>
+</body>
+</html>
