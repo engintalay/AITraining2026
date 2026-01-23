@@ -8,10 +8,19 @@ logger = setup_logger("ModelLoader")
 
 def load_tokenizer(model_config: ModelConfig):
     logger.info(f"Loading tokenizer for {model_config.name_or_path}")
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_config.name_or_path,
-        trust_remote_code=model_config.trust_remote_code
-    )
+    
+    # Yerel model için tokenizer sorunu varsa GPT-2 tokenizer kullan
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(
+            model_config.name_or_path,
+            trust_remote_code=model_config.trust_remote_code,
+            local_files_only=True
+        )
+    except:
+        logger.warning("Yerel tokenizer yüklenemedi, GPT-2 tokenizer kullanılıyor")
+        from transformers import GPT2Tokenizer
+        tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
+        
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
         logger.info("Setting pad_token to eos_token")
@@ -37,11 +46,12 @@ def load_model(model_config: ModelConfig, peft_config: PeftConfig = None, infere
     model = AutoModelForCausalLM.from_pretrained(
         model_config.name_or_path,
         quantization_config=bnb_config,
-        device_map="auto",  # GPU'ya otomatik yerleştir
+        device_map="auto",
         trust_remote_code=model_config.trust_remote_code,
         torch_dtype=torch.float16,
         low_cpu_mem_usage=True,
-        use_cache=False if not inference_mode else True
+        use_cache=False if not inference_mode else True,
+        local_files_only=True  # Offline mod
     )
 
     if not inference_mode:

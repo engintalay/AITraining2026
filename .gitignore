@@ -1,4 +1,8 @@
 models/
 venv/
-src/
 experiments/
+__pycache__/
+*.pyc
+*.pyo
+*.log
+training.log

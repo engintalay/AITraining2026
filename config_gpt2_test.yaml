@@ -1,0 +1,32 @@
+model:
+  name_or_path: "gpt2"  # Small model that might be cached
+  quantization_bit: 4
+  use_gradient_checkpointing: true
+  torch_dtype: "float16"
+
+peft:
+  r: 8
+  lora_alpha: 16
+  target_modules: ["c_attn"]
+  lora_dropout: 0.1
+
+training:
+  batch_size: 1
+  gradient_accumulation_steps: 8
+  num_train_epochs: 1
+  learning_rate: 1.0e-4
+  output_dir: "experiments/gpt2_test"
+  resume_from_checkpoint: true
+  dataloader_num_workers: 0
+  save_steps: 100
+  logging_steps: 10
+  max_grad_norm: 0.3
+
+data:
+  dataset_path: "Zogoria_QA_clean.json"
+  max_seq_length: 256
+  
+system:
+  low_cpu_mem_usage: true
+  device_map: "auto"
+  max_memory: {0: "3.5GB"}

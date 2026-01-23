@@ -1,4 +1,6 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from ..config import AppConfig
 from ..evaluator import Evaluator
@@ -48,3 +50,7 @@ async def compare_models(request: CompareRequest):
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+@app.get("/web")
+def web_interface():
+    return FileResponse("web_interface.html")
