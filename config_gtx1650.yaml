@@ -16,7 +16,7 @@ training:
   batch_size: 1                            # Minimum batch size
   gradient_accumulation_steps: 8           # Büyük accumulation
   num_train_epochs: 1
-  learning_rate: 1.0e-4                    # Düşük learning rate
+  learning_rate: 2.0e-4                    # Düşük learning rate
   output_dir: "experiments/gtx1650_finetune"
   resume_from_checkpoint: true
   dataloader_num_workers: 0                # CPU kullanımını azalt

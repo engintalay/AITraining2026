@@ -1,13 +1,27 @@
 #!/bin/bash
 deactivate
 source venv/bin/activate
-# GPU kontrolünü yap ve sonucu bir değişkene ata
-GPU_CHECK=$(lspci | grep -i 'GeForce GTX 1650 Mobile' | wc -l)
-# Eğer sonuç 1 ise GTX 1650 konfigürasyonuyla çalıştır
-if [ "$GPU_CHECK" -eq 1 ]; then
-    echo "GTX 1650 Mobile tespit edildi. Özel konfigürasyon yükleniyor..."
-    python main.py --config config_gtx1650.yaml
-else
-    echo "GTX 1650 bulunamadı. Varsayılan konfigürasyon yükleniyor..."
-    python main.py --config config.yaml
+
+echo "🔍 GPU kontrolü yapılıyor..."
+
+# GPU VRAM kontrolü (MB cinsinden)
+GPU_VRAM=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits 2>/dev/null | head -1)
+
+if [ -z "$GPU_VRAM" ]; then
+    echo "❌ NVIDIA GPU bulunamadı!"
+    exit 1
 fi
+
+echo "📊 GPU VRAM: ${GPU_VRAM}MB"
+
+# 4GB = 4096MB threshold
+if [ "$GPU_VRAM" -le 4096 ]; then
+    echo "⚡ Düşük VRAM tespit edildi (≤4GB). GTX1650 config kullanılıyor..."
+    CONFIG_FILE="config_gtx1650.yaml"
+else
+    echo "🚀 Yeterli VRAM tespit edildi (>4GB). Normal config kullanılıyor..."
+    CONFIG_FILE="config.yaml"
+fi
+
+echo "🎯 Kullanılan config: $CONFIG_FILE"
+python main.py --config $CONFIG_FILE
