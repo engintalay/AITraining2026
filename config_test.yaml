@@ -1,5 +1,5 @@
 model:
-  name_or_path: "gpt2"
+  name_or_path: "./models/ytu-ce-cosmos/turkish-gpt2-large"
   quantization_bit: null
   use_gradient_checkpointing: false
   trust_remote_code: false
